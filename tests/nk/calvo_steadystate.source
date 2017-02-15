@@ -1,0 +1,36 @@
+% Exogenous variables.
+Efficiency = 1;
+RiskPremium = 1;
+
+% Logged exogenous variables.
+a = 0;
+b = 0;
+
+% Long run inflation level is pinned down in the steady state file.
+Inflation = 1.02^.25;
+
+% Steady state level of hours is pinned down in the steady state file.
+Hours = 1.0/3.0;
+
+Theta = 1;
+Dist = 1;
+RelativePrice = 1;
+NominalInterestRate = Inflation/BETA;
+RealWage = (Efficiency*(EPSILON - 1))/EPSILON;
+
+% Parameter XIH is updated with long run restrictions.
+XIH = -RealWage/(Hours^ETA*(Efficiency*Hours)^SIGMAC);
+
+Output = Efficiency*Hours;
+Consumption = Output;
+Lambda = 1/Consumption^SIGMAC;
+Z1 = -(Output*RealWage)/(Efficiency*(BETA*NU - 1));
+Z2 = -Output/(BETA*NU - 1);
+Z3 = -Output/(BETA*NU - 1);
+
+% Auxyliary variables.
+Exp1 = Lambda/Inflation;
+Exp2 = -(Lambda*Output*RealWage)/(Efficiency*(BETA*NU-1));
+Exp3 = -(Lambda*Output)/(BETA*NU-1);
+Exp4 = -(Lambda*Output)/(BETA*NU-1);
+
