@@ -31,6 +31,6 @@ str = strtrim(str);
 
 if ~isequal(str(1),'%')
     str = sprintf(' %s ', str);
-    str = regexprep(str, sprintf('(?<=[^a-zA-Z0-9])%s(?=[^a-zA-Z0-9])', old), new);
+    str = regexprep(str, sprintf('(?<=[^a-zA-Z0-9_])%s(?=[^a-zA-Z0-9_])', old), new);
     str = strtrim(str);
 end
