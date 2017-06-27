@@ -39,7 +39,11 @@ end
 % Create an m file returning the steadystate.
 fidout = fopen([ModelInfo.fname '_steadystate_source.m'],'w');
 fprintf(fidout,'function [ys, params, info] = %s_steadystate2(ys, exo, params)\n',ModelInfo.fname);
-fprintf(fidout,'% File created by write_steadystate_file routine, %s.\n', datestr(datetime));
+if isoctave()
+    fprintf(fidout,'%% File created by write_steadystate_file routine, %s.\n', datestr(clock));
+else
+    fprintf(fidout,'% File created by write_steadystate_file routine, %s.\n', datestr(clock));
+end
 fprintf(fidout,'\n');
 fprintf(fidout,'info = 0;\n\n');
 

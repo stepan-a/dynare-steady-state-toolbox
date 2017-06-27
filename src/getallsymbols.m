@@ -45,7 +45,13 @@ parnames = [parnames, num2cell(cellfun('size',parnames(:,1),2)), num2cell(zeros(
 
 % Sort the table of symbols with respect to the length of the object names (decreasing order).
 symboltable = [varnames; parnames];
-symboltable = sortrows(symboltable, -3);
+if isoctave()
+    lengths = cell2mat(symboltable(:,3));
+    [~, idx] = sort(lengths, 'descend');
+    symboltable = symboltable(idx,:);
+else
+    symboltable = sortrows(symboltable, -3);
+end
 
 % Return the number of symbols
 nsymbols = size(symboltable,1);
