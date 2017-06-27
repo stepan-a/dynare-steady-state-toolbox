@@ -20,12 +20,15 @@ Compared to what Dynare does with the `steady_state_model`, this
 toolbox is far less efficient than Dynare in producing the
 `*_steadystate2.m` routine. The advantage is the additional
 flexibility. The user can use any matlab statement in the source file
-(loops, conditional structures, fixed point routines), add traps
+(loops, conditional constructs, fixed point routines, ...), add traps
 and/or return custom error flags. Note that the routine produced by
 this toolbox is as efficient as the one produced by Dynare from the
 `steady_state_model` block (only the generation of the
 `*_steadystate2.m` is slower, because this is done in Matlab/Octave
-rather than by the C++ preprocessor).
+rather than by the C++ preprocessor). The relative cost associated to
+the generation of the `*_steadystate2.m` is generally very marginal,
+when the model has to be estimated, or when one performs Monte Carlo
+analysis to elicite the prior distributions.
 
 The source files are covered by the GNU General Public Licence version
 3 or later, see [here](LICENSE.md).
