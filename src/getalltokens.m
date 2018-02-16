@@ -27,7 +27,7 @@ function tokens = getalltokens(str)
 
 
 % Returns tokens, as a cell a strings, in expression str. 
-tokens = unique(strsplit(str,{' ', '*', '(', ')', '+', '[', ']', '-', '^', '/', '=', ';', '{', '}', '>', '<', '<=', '>='}));
+tokens = unique(strsplit(str,{' ', '*', '(', ')', '+', ',', '[', ']', '-', '^', '/', '=', ';', '{', '}', '>', '<', '<=', '>='}));
 
 % Remove empty elements.
 if ~isempty(tokens)
