@@ -35,8 +35,8 @@ varnames = ModelInfo.endo_names;
 parnames = ModelInfo.param_names;
 
 % (Add) Second column holding the indices of the variables and parameters in ModelInfo.endo_simul and ModelInfo.params
-varnames = [cellstr(varnames), num2cell(transpose(1:length(varnames)))];
-parnames = [cellstr(parnames), num2cell(transpose(1:length(parnames)))];
+varnames = [varnames, num2cell(transpose(1:length(varnames)))];
+parnames = [parnames, num2cell(transpose(1:length(parnames)))];
 
 % (Add) Third column holding the number of number alphanumeric caracters in each object name.
 % (Add) Fourth column with a dummy variable (1 => endogenous variable, 0 => parameter).
