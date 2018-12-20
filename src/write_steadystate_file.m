@@ -37,8 +37,8 @@ end
 [symboltable, nsymbols] = getallsymbols(ModelInfo);
 
 % Create an m file returning the steadystate.
-fidout = fopen([ModelInfo.fname '_steadystate_source.m'],'w');
-fprintf(fidout,'function [ys, params, info] = %s_steadystate2(ys, exo, params)\n',ModelInfo.fname);
+fidout = fopen([ModelInfo.fname filesep() 'steadystate_source.m'],'w');
+fprintf(fidout, 'function [ys, params, info] = steadystate(ys, exo, params)\n');
 if isoctave()
     fprintf(fidout,'%% File created by write_steadystate_file routine, %s.\n', datestr(clock));
 else

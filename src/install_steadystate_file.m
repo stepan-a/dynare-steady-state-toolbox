@@ -37,7 +37,7 @@ if ~nargin || isempty(pathtosource)
 end
 
 SOURCE_FILE_0 = [M_.fname '_steadystate.source'];
-SOURCE_FILE_1 = [M_.fname '_steadystate_source.m'];
+SOURCE_FILE_1 = [M_.fname filesep() 'steadystate_source.m'];
 
 PATH_SOURCE_FILE_0 = pathtosource;
 PATH_SOURCE_FILE_1 = [pwd() filesep()];
@@ -52,7 +52,7 @@ else
 end
 
 % Create the steadystate2 file.
-copyfile([M_.fname '_steadystate_source.m'], [M_.fname '_steadystate2.m']);
+copyfile([M_.fname filesep() 'steadystate_source.m'], ['+' M_.fname filesep() 'steadystate.m']);
     
 % Set steadystate_flag option.
 options_.steadystate_flag = 2;
