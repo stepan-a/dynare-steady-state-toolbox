@@ -4,12 +4,14 @@ RiskPremium = 1;
 
 % Logged exogenous variables.
 a = 0;
-b = 0;
+b = 0;                         // This is a comment
 
 % Long run inflation level is pinned down in the steady state file.
 Inflation = 1.02^.25;
 
-% Steady state level of hours is pinned down in the steady state file.
+/*
+   Steady state level of hours is pinned down in the steady state file.
+*/
 Hours = 1.0/3.0;
 
 Theta = 1;
