@@ -10,7 +10,7 @@ function c = removetokensincellofstrings(c, symboltableelement)
 % OUTPUTS 
 % - c                    [cell]    Cell of strings.
 
-% Copyright © 2017 Stéphane Adjemian
+% Copyright © 2017, 2025 Stéphane Adjemian
 %
 % This file is part of the Dynare Steady State Toolbox.
 %
@@ -28,6 +28,7 @@ function c = removetokensincellofstrings(c, symboltableelement)
 % along with Dynare Steady State Toolbox.  If not, see <http://www.gnu.org/licenses/>.
 
 for j=1:length(c)
+    c{j} = d2mcomments(c{j}); % Convert Dynare-style comments to MATLAB-style comments
     if isexpressionmember(symboltableelement{1}, c{j})
         if symboltableelement{4}
             % Endogenous variable.
@@ -38,4 +39,3 @@ for j=1:length(c)
         end
     end
 end
-
