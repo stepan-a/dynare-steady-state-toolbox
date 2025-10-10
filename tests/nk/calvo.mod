@@ -68,7 +68,7 @@ NU    = .5*((1+gamma+BETA)/BETA-sqrt(discr));
 // Deterministic steady state levels for inflation, hours, risk premium and efficiency are defined
 // in the steadystate file.
 
-model(use_dll);
+model;
 
     [type = 'Definition of the exogenous state variables']
     Efficiency - STEADY_STATE(Efficiency)*exp(a);
