@@ -13,7 +13,7 @@ function install_steadystate_file(pathtosource)
 % This function needs two Dynare's global structures (options_ and M_). The structure options_ is
 % updated by this function (by setting a flag signaling the avaibility of *_steadystate2.m file).
     
-% Copyright © 2017 Stéphane Adjemian
+% Copyright © 2017, 2025 Stéphane Adjemian
 %
 % This file is part of the Dynare Steady State Toolbox.
 %
@@ -37,7 +37,7 @@ if ~nargin || isempty(pathtosource)
 end
 
 SOURCE_FILE_0 = [M_.fname '_steadystate.source'];
-SOURCE_FILE_1 = [M_.fname filesep() 'steadystate_source.m'];
+SOURCE_FILE_1 = [M_.fname '_steadystate_source.m'];
 
 PATH_SOURCE_FILE_0 = pathtosource;
 PATH_SOURCE_FILE_1 = [pwd() filesep()];
@@ -52,7 +52,7 @@ else
 end
 
 % Create the steadystate2 file.
-copyfile([M_.fname filesep() 'steadystate_source.m'], ['+' M_.fname filesep() 'steadystate.m']);
+copyfile([M_.fname '_steadystate_source.m'], ['+' M_.fname filesep() 'steadystate.m']);
     
 % Set steadystate_flag option.
 options_.steadystate_flag = 2;
