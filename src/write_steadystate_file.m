@@ -33,9 +33,6 @@ if nargin<2 || isempty(pathtosource)
     pathtosource = [ pwd() filesep() ];
 end
 
-% Get the list of symbols (endogenous variables and parameters).
-[symboltable, nsymbols] = getallsymbols(ModelInfo);
-
 % Create an m file returning the steadystate.
 fidout = fopen([ModelInfo.fname '_steadystate_source.m'],'w');
 fprintf(fidout, 'function [ys, params, info] = steadystate(ys, exo, params)\n');
@@ -61,9 +58,86 @@ end
 
 c = textread([pathtosource ModelInfo.fname '_steadystate.source'],'%s','delimiter','\n');
 
-for i=1:nsymbols
-    % Replace endogenous variables and parameters tokens by elements in vectors ys and params.
-    c = removetokensincellofstrings(c, symboltable(i,:));
+c(cellfun(@isempty, c)) = [];  % Remove empty lines.
+c = strtrim(c);                % Remove leading and trailing ses.
+
+%
+% Remove comments (%, %{, %}) and blank lines.
+%
+
+j = 1;
+while j<=numel(c)
+    cblock = false;
+    % Convert Dynare-style comments to MATLAB-style comments
+    c{j} = d2mcomments(c{j});
+    id = regexp(c{j}, '%{');
+    if ~isempty(id)
+        cblock = true;
+        if id(1)>1
+            c{j} = c{j}(1:id(1)-1); % Keep part of the line before %{
+            i = j + 1;
+        else
+            c(j) = [];              % Remove entire line if %{ is at the beginning of the line
+            i = j;
+        end
+    end
+    while cblock && i<=length(c)
+        c{i} = d2mcomments(c{i});
+        id = regexp(c{i}, '%}');
+        if isempty(id)
+            c(i) = [];
+        else
+            if length(c{i})>id(1)+1
+                c{i} = c{i}(id{1}+2:end); % Keep part of the line after %}
+                i = i + 1;
+            else
+                c(i) = [];
+                c{i} = d2mcomments(c{i});
+            end
+            cblock = false;
+        end
+    end
+    % Remove comments
+    id = regexp(c{j}, '%');
+    if ~isempty(id)
+        if id(1)>1
+            c{j} = c{j}(1:id(1)-1); % Keep part of the line before %
+        else
+            c(j) = [];              % Remove entire line if % is at the beginning of the line
+        end
+    end
+    c{j} = strtrim(c{j});
+    j = j + 1;
+end
+
+%
+% Remove linebreaks in assignments.
+%
+
+i = 1;
+while i < numel(c)
+    if ~isequal(c{i}(end), ';')
+        c{i} = strcat(c{i}, c{i+1});
+        c(i+1) = [];
+    else
+        i = i + 1;
+    end
+end
+
+%
+% Replace endogenous variables, exogenoous variables and parameters by ys(i), xxo(i) and params(i).
+%
+
+for i=1:ModelInfo.param_nbr
+    c = regexprep(c, sprintf('\\<%s\\>', ModelInfo.param_names{i}), sprintf('params(%u)', i));
+end
+
+for i=1:ModelInfo.orig_endo_nbr
+    c = regexprep(c, sprintf('\\<%s\\>', ModelInfo.endo_names{i}), sprintf('ys(%u)', i));
+end
+
+for i=1:ModelInfo.exo_nbr
+    c = regexprep(c, sprintf('\\<%s\\>', ModelInfo.exo_names{i}), sprintf('exo(%u)', i));
 end
 
 fprintf(fidout,'%s\n',c{:});
