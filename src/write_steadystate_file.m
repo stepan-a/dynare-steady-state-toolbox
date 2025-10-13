@@ -1,18 +1,18 @@
-function write_steadystate_file(ModelInfo, pathtosource)
+function write_steadystate_file(ModelInfo, pathtosource, scriptname)
 
 % Transforms the Matlab script defining the steady state into a *_steadystate2.m like file (readable by Dynare).
 %
-% INPUTS 
+% INPUTS
 % - ModelInfo      [struct]  Dynare generated M_ global structure (description of the model)
 % - pathtosource   [string]  Path to the folder where the matlab script is to be found.
 %
-% OUTPUTS 
+% OUTPUTS
 % none
 %
-% REMARKS 
+% REMARKS
 % This function has no output, but will write a file called <ModelInfo_.fname>_steadystate_source.m.
-    
-% Copyright © 2017 Stéphane Adjemian
+
+% Copyright © 2017, 2025 Stéphane Adjemian
 %
 % This file is part of the Dynare Steady State Toolbox.
 %
@@ -46,6 +46,18 @@ else
 end
 fprintf(fidout,'\n');
 fprintf(fidout,'info = 0;\n\n');
+
+% Run script before evaluating the steady state
+if nargin>2
+   fidin = fopen(scriptname, 'r');
+   while ~feof(fidin)
+        line = fgetl(fidin);
+        if ischar(line)
+            fprintf(fidout, '%s\n', line);
+        end
+    end
+   fprintf('\n')
+end
 
 c = textread([pathtosource ModelInfo.fname '_steadystate.source'],'%s','delimiter','\n');
 
