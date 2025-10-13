@@ -42,6 +42,10 @@ SOURCE_FILE_1 = [M_.fname '_steadystate_source.m'];
 PATH_SOURCE_FILE_0 = pathtosource;
 PATH_SOURCE_FILE_1 = [pwd() filesep()];
 
+if nargin<2
+    scriptname = [];
+end
+
 % Check if the source for the steady state needs to be parsed, and parse the .source file if needed.
 if ~exist(SOURCE_FILE_1, 'file')
     write_steadystate_file(M_, PATH_SOURCE_FILE_0, scriptname);
@@ -53,6 +57,6 @@ end
 
 % Create the steadystate2 file.
 copyfile([M_.fname '_steadystate_source.m'], ['+' M_.fname filesep() 'steadystate.m']);
-    
+
 % Set steadystate_flag option.
 options_.steadystate_flag = 2;

@@ -31,6 +31,11 @@ function write_steadystate_file(ModelInfo, pathtosource, scriptname)
 
 if nargin<2 || isempty(pathtosource)
     pathtosource = [ pwd() filesep() ];
+    scriptname = [];
+end
+
+if nargin<3
+    scriptname = [];
 end
 
 % Create an m file returning the steadystate.
@@ -45,15 +50,15 @@ fprintf(fidout,'\n');
 fprintf(fidout,'info = 0;\n\n');
 
 % Run script before evaluating the steady state
-if nargin>2
-   fidin = fopen(scriptname, 'r');
-   while ~feof(fidin)
+if ~isempty(scriptname)
+    fidin = fopen(scriptname, 'r');
+    while ~feof(fidin)
         line = fgetl(fidin);
         if ischar(line)
             fprintf(fidout, '%s\n', line);
         end
     end
-   fprintf('\n')
+    fprintf('\n')
 end
 
 c = textread([pathtosource ModelInfo.fname '_steadystate.source'],'%s','delimiter','\n');
