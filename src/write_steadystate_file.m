@@ -1,10 +1,12 @@
-function write_steadystate_file(ModelInfo, pathtosource, scriptname)
+function write_steadystate_file(ModelInfo, pathtosource, scriptname, debug)
 
 % Transforms the Matlab script defining the steady state into a *_steadystate2.m like file (readable by Dynare).
 %
 % INPUTS
 % - ModelInfo      [struct]  Dynare generated M_ global structure (description of the model)
 % - pathtosource   [string]  Path to the folder where the matlab script is to be found.
+% - scriptname     [string]  Name of a matlab script to be run before evaluating the steady state (can be empty)
+% - debug          [logical] If true, a debug file is created containing the intermediate matlab script.
 %
 % OUTPUTS
 % none
@@ -38,16 +40,39 @@ if nargin<3
     scriptname = [];
 end
 
-% Create an m file returning the steadystate.
-fidout = fopen([ModelInfo.fname '_steadystate_source.m'],'w');
-fprintf(fidout, 'function [ys, params, info] = steadystate(ys, exo, params)\n');
-if isoctave()
-    fprintf(fidout,'%% File created by write_steadystate_file routine, %s.\n', datestr(clock));
-else
-    fprintf(fidout,'% File created by write_steadystate_file routine, %s.\n', datestr(clock));
+if nargin<4
+    debug = false;
 end
-fprintf(fidout,'\n');
-fprintf(fidout,'info = 0;\n\n');
+
+% Create an m file returning the steadystate.
+fidout1 = fopen([ModelInfo.fname '_steadystate_source.m'],'w');
+fprintf(fidout1, 'function [ys, params, info] = steadystate(ys, exo, params)\n');
+if isoctave()
+    fprintf(fidout1,'%% File created by write_steadystate_file routine, %s.\n', datestr(clock));
+else
+    fprintf(fidout1,'%% File created by write_steadystate_file routine, %s.\n', datestr(clock));
+end
+fprintf(fidout1,'\n');
+fprintf(fidout1,'info = 0;\n\n');
+
+if debug
+    fidout2 = fopen([ModelInfo.fname '_steadystate_debug.m'], 'w');
+    fprintf(fidout2, '%% MATLAB script created by write_steadystate_file routine, %s.\n', datestr(clock));
+    fprintf(fidout2, '%% [debug mode]\n');
+    fprintf(fidout2, '\n');
+    fprintf(fidout2, '%%\n');
+    fprintf(fidout2, '%% Parameters\n');
+    fprintf(fidout2, '%%\n');
+    for i=1:ModelInfo.param_nbr
+        fprintf(fidout2, '%s = %.9f;\n', ModelInfo.param_names{i}, ModelInfo.params(i));
+    end
+    fprintf(fidout2, '%%\n');
+    fprintf(fidout2, '%% Exogenous variables\n');
+    fprintf(fidout2, '%%\n');
+    for i=1:ModelInfo.exo_nbr
+        fprintf(fidout2, '%s = 0;\n', ModelInfo.exo_names{i});
+    end
+end
 
 % Run script before evaluating the steady state
 if ~isempty(scriptname)
@@ -55,7 +80,10 @@ if ~isempty(scriptname)
     while ~feof(fidin)
         line = fgetl(fidin);
         if ischar(line)
-            fprintf(fidout, '%s\n', line);
+            fprintf(fidout1, '%s\n', line);
+            if debug
+                fprintf(fidout2, '%s\n', line);
+            end
         end
     end
     fprintf('\n')
@@ -129,6 +157,11 @@ while i < numel(c)
     end
 end
 
+if debug
+    fprintf(fidout2,'%s\n',c{:});
+    fclose(fidout2);
+end
+
 %
 % Replace endogenous variables, exogenoous variables and parameters by ys(i), xxo(i) and params(i).
 %
@@ -145,5 +178,5 @@ for i=1:ModelInfo.exo_nbr
     c = regexprep(c, sprintf('\\<%s\\>', ModelInfo.exo_names{i}), sprintf('exo(%u)', i));
 end
 
-fprintf(fidout,'%s\n',c{:});
-fclose(fidout);
+fprintf(fidout1,'%s\n',c{:});
+fclose(fidout1);

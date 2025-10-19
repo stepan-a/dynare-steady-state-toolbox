@@ -1,4 +1,4 @@
-function install_steadystate_file(pathtosource, scriptname)
+function install_steadystate_file(pathtosource, scriptname, debug, force)
 
 % Calls the Matlab function transforming the Matlab script defining the steady state
 % into a *_steadystate2.m file (readable by Dynare)
@@ -46,12 +46,20 @@ if nargin<2
     scriptname = [];
 end
 
+if nargin<3
+    debug = false;
+end
+
+if nargin<4
+    force = false;
+end
+
 % Check if the source for the steady state needs to be parsed, and parse the .source file if needed.
-if ~exist(SOURCE_FILE_1, 'file')
-    write_steadystate_file(M_, PATH_SOURCE_FILE_0, scriptname);
+if ~exist(SOURCE_FILE_1, 'file') || debug || force
+    write_steadystate_file(M_, PATH_SOURCE_FILE_0, scriptname, debug);
 else
     if isnewer(SOURCE_FILE_0, SOURCE_FILE_1, PATH_SOURCE_FILE_0, PATH_SOURCE_FILE_1)
-        write_steadystate_file(M_, PATH_SOURCE_FILE_0, scriptname);
+        write_steadystate_file(M_, PATH_SOURCE_FILE_0, scriptname, debug);
     end
 end
 
