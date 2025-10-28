@@ -47,17 +47,13 @@ end
 % Create an m file returning the steadystate.
 fidout1 = fopen([ModelInfo.fname '_steadystate_source.m'],'w');
 fprintf(fidout1, 'function [ys, params, info] = steadystate(ys, exo, params)\n');
-if isoctave()
-    fprintf(fidout1,'%% File created by write_steadystate_file routine, %s.\n', datestr(clock));
-else
-    fprintf(fidout1,'%% File created by write_steadystate_file routine, %s.\n', datestr(clock));
-end
+fprintf(fidout1,'%% File created by write_steadystate_file routine, %s.\n', datetime('now'));
 fprintf(fidout1,'\n');
 fprintf(fidout1,'info = 0;\n\n');
 
 if debug
     fidout2 = fopen([ModelInfo.fname '_steadystate_debug.m'], 'w');
-    fprintf(fidout2, '%% MATLAB script created by write_steadystate_file routine, %s.\n', datestr(clock));
+    fprintf(fidout2, '%% MATLAB script created by write_steadystate_file routine, %s.\n', datetime('now'));
     fprintf(fidout2, '%% [debug mode]\n');
     fprintf(fidout2, '\n');
     fprintf(fidout2, '%%\n');
@@ -101,9 +97,7 @@ c = strtrim(c);                % Remove leading and trailing ses.
 j = 1;
 while j<=numel(c)
     cblock = false;
-    % Convert Dynare-style comments to MATLAB-style comments
-    c{j} = d2mcomments(c{j});
-    id = regexp(c{j}, '%{');
+    id = regexp(c{j}, '/\*');
     if ~isempty(id)
         cblock = true;
         if id(1)>1
@@ -115,8 +109,7 @@ while j<=numel(c)
         end
     end
     while cblock && i<=length(c)
-        c{i} = d2mcomments(c{i});
-        id = regexp(c{i}, '%}');
+        id = regexp(c{i}, '\*/');
         if isempty(id)
             c(i) = [];
         else
@@ -125,22 +118,25 @@ while j<=numel(c)
                 i = i + 1;
             else
                 c(i) = [];
-                c{i} = d2mcomments(c{i});
             end
             cblock = false;
+            j = i;
         end
     end
-    % Remove comments
-    id = regexp(c{j}, '%');
-    if ~isempty(id)
-        if id(1)>1
-            c{j} = c{j}(1:id(1)-1); % Keep part of the line before %
-        else
-            c(j) = [];              % Remove entire line if % is at the beginning of the line
+    if j<=numel(c)
+        % Convert Dynare-style comments to MATLAB-style comments
+        c{j} = d2mcomments(c{j});
+        id = regexp(c{j}, '%');
+        if ~isempty(id)
+            if id(1)>1
+                c{j} = c{j}(1:id(1)-1); % Keep part of the line before %
+            else
+                c(j) = [];              % Remove entire line if % is at the beginning of the line
+            end
         end
+        c{j} = strtrim(c{j});
+        j = j + 1;
     end
-    c{j} = strtrim(c{j});
-    j = j + 1;
 end
 
 %
